@@ -1,0 +1,422 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>GASで文字起こしLINEWORKSボット作成ハンズオン</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-148911740-2"
+                  id="lwtt-gas-ocrbot"
+                  title="GASで文字起こしLINEWORKSボット作成ハンズオン"
+                  environment="web"
+                  feedback-link="https://twitter.com/taketakekaho">
+    
+      <google-codelab-step label="GASで文字起こしLINE WORKSボットをつくろう" duration="2">
+        <p class="image-container"><img style="width: 624.00px" src="img\abb2b78c52db0952.png"></p>
+<p><strong>Last Updated:</strong> 2021-05-30</p>
+<h2 is-upgraded><strong>はじめに</strong></h2>
+<h3 is-upgraded><strong>手順概要</strong></h3>
+<p>このハンズオン手順はLINE WORKS のエンジニア向けコミュニティ LINE WORKS Tech Talkの勉強会「<a href="https://lwugdev.connpass.com/event/212541/" target="_blank">GASで文字起こしLINE WORKSボット作成ハンズオン</a>」で利用したハンズオンです。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\89b33530cc5b77f6.png"></p>
+<p>非営利のコミュニティ運営者で作成した手順ですが、個人や会社の皆さんに共有して社内勉強会や復習などで自由に使って頂いて構いません。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ハンズオン前提条件・準備" duration="2">
+        <h2 is-upgraded><strong>必要なもの</strong></h2>
+<ul>
+<li>LINE WORKS（無料プランでもOK）にBot管理権限のある管理者でログインできること、あるいは、わからない場合やLINE WORKS環境を持っていない場合には当日18:30〜の準備フォローの時間帯でご参加ください（<a href="https://qiita.com/taketakekaho/items/7b65bc6230473ab2bbbb" target="_blank">こちらの手順</a>のBot登録の前まで終わっていればOKです。<a href="https://line.worksmobile.com/jp/ebook/video-for-beginner/" target="_blank">公式ページのこちらの動画</a>も参考になります。）</li>
+<li>Googleアカウント（無料アカウントでOKです。持っていない方は<a href="https://qiita.com/taketakekaho/items/fb440865c240e9a3aba4" target="_blank">こちらの手順</a>を参考にして作成しておいてください）</li>
+<li>WindowsあるいはMacOSのPCでブラウザ（ChromeあるいはFireFox推奨）でインターネットに接続できること</li>
+<li>（任意）カメラ付きのスマホでLINE WORKSにログインできること</li>
+</ul>
+<h2 is-upgraded><strong>準備</strong></h2>
+<p>こちらのGithubにアクセスしZIPファイルをダウンロードしてください。</p>
+<p>ハンズオンルール</p>
+<ul>
+<li>わかるようであればハンズオン手順に従いどんどん先に進んでも大丈夫です</li>
+<li>わからないことがあればスプレッドシートの質問欄に質問してください。質問以外の感想や簡単な質問であればZoomチャットに書き込んでもいいですが、流れてしまって拾えない場合がありますので、質問はスプレッドシートに入力頂けるとありがたいです。</li>
+<li>「人に教える」ということで理解が深まります。運営メンバーだけでなく、参加者の皆さんもわかる内容なら是非質問に答えてください！間違ってても全部わからなくても大丈夫！ </li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="完成イメージ" duration="2">
+        <p><a href="https://lwugdev.connpass.com/event/212541/" target="_blank">勉強会のConnpassページ</a>に動画を掲載していますが、チャットボットがいるルームに画像ファイルを送信すると</p>
+<p class="image-container"><img style="width: 229.00px" src="img\abe01c2804c5ddbe.png"></p>
+<p>文字起こしして返してくれるボットを作ります。</p>
+<p class="image-container"><img style="width: 237.00px" src="img\7816c0584a89f2e4.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LINE WORKSのBotシステム構成を理解しよう" duration="5">
+        <p>LINE WORKSに画像を送ってから文字起こしされたテキストメッセージが返ってくるまでのデータの流れとシステム構成を理解しましょう。</p>
+<p>以下のイメージ図をご確認ください。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\23f6653f0edd8bb9.png"></p>
+<p>①LINE WORKSクライアントからボットアカウントとのトークルームに画像ファイルを送信します。</p>
+<p>②トークルームに画像ファイルが添付されたことをトリガーとしてBotプログラムが反応し、画像ファイルをLINE WORKSシステムから取得します。</p>
+<p>③画像ファイルをGoogle Driveに置きます。</p>
+<p>④画像ファイルをGoogleドキュメントで開きます。（≒文字起こし）</p>
+<p>⑤Googleドキュメント内のテキストデータを取得し、画像ファイルとGoogleドキュメントファイルを削除します。</p>
+<p>⑥文字起こしされたテキストデータをAPI経由で送信します。</p>
+<p>⑦文字起こしされたテキストデータがBotアカウントからメッセージ送信されます。</p>
+<p>上記の処理とデータの流れを意識してボットを作りましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LINE WORKS のAPIキー発行" duration="10">
+        <p>LINE WORKSのBot登録とAPIキーの発行を行います。構成図だとここの部分を作ります。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\d94fec26bb80d129.png"></p>
+<h2 is-upgraded><strong>LINE WORKS Developer Consoleにログイン</strong></h2>
+<p>LINE WORKSボットを作成するには、LINE WORKS Developer Consoleの利用が必要です。まず、<a href="https://developers.worksmobile.com/jp/?lang=ja" target="_blank">LINE WORKS Developersサイト</a>にアクセスし、右上の[Developer Console]ボタンをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\b96967642c9d96ee.png"></p>
+<p>IDでログインもしくは携帯電話でログインのどちらかでログインします。</p>
+<p class="image-container"><img style="width: 393.50px" src="img\50299cf5008b4c7b.png"></p>
+<p>初めてDevelopers Consoleにログインした場合には利用規約合意画面が表示されますので同意の上で利用するをクリックしてください。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e61626897562a523.png"></p>
+<p>以下のような画面が表示されたら正常にログインできています。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\a1dc1764f1e6b51e.png"></p>
+<aside class="warning"><p><strong>注意</strong>：以下のような画面が表示された場合には、Developers権限が付与されていないアカウントになります。プランによっても異なりますが、フリープランの場合には、Developers権限のある最高管理者、副管理者のどちらかを利用してDeveloper Consoleにログインしてください。</p>
+<p class="image-container"><img style="width: 610.00px" src="img\da956a5cfb76f0f.png"></p>
+</aside>
+<h2 is-upgraded><strong>APIの発行</strong></h2>
+<p><a href="https://developers.worksmobile.com/jp/document/3002001?lang=ja" target="_blank">公式ドキュメント</a>に詳細の説明がありますがLINEWORKSのAPIには、2種類あります。</p>
+<ul>
+<li>サービスAPI ログインしている本人のデータへのみアクセスできるAPI</li>
+<li>サーバーAPI ユーザーのログインが不要で、ドメイン（ログインアカウントの＠のうしろのグループ単位）内のすべてのユーザーデータにアクセスできるAPI</li>
+</ul>
+<p>今回のボットはサービスAPIを使って作ります。</p>
+<p><a href="https://developers.worksmobile.com/jp/console/openapi/main" target="_blank">LINE WORKS Developer Console</a>でAPIの発行を行います。</p>
+<p>まずは、API IDの発行です。API IDの[発行]ボタンをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\3da54355e2e19ed4.png"></p>
+<p>上からペロンと出てきて[OK]をクリックすると</p>
+<p class="image-container"><img style="width: 472.00px" src="img\9094a7c100b54574.png"></p>
+<p>発行されています。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c2c2b7e705e74295.png"></p>
+<p>次に、Server API Consumer Keyの[発行]ボタンをクリック</p>
+<p class="image-container"><img style="width: 624.00px" src="img\5b79fd7a0c56fdc6.png"></p>
+<p>Server API Consumer Key権限設定ポップアップが起動します。これは、API（Bot）にどこまでの権限を与えるのかということを設定するものです。今回のAPIは、</p>
+<ul>
+<li>LINE WORKS内に保存された画像ファイルを外部から取得する（照会）</li>
+<li>LINE WORKSのトークルームに外部からメッセージを投稿する（追加）</li>
+</ul>
+<p>の処理でAPIを使いますので、追加と照会にチェックをつけて[次へ]をクリック</p>
+<p class="image-container"><img style="width: 451.48px" src="img\33693d5c723a063.png"></p>
+<aside class="special"><p><strong>ノート</strong>：サーバーAPIの利用範囲は公式ドキュメントの<a href="https://developers.worksmobile.com/jp/document/1002005?lang=ja" target="_blank">こちら</a>に詳しい説明があります。</p>
+</aside>
+<p>Server API Consumer Key管理でTokenの設定を行います。今回はハンズオンなので適当に7日間、自動延長ありにして、[保存]をクリックしてください。</p>
+<p class="image-container"><img style="width: 456.50px" src="img\4f2feb9c2bf832dd.png"></p>
+<p>発行されました。</p>
+<p class="image-container"><img style="width: 457.00px" src="img\3f0e7e0825a0b7c9.png"></p>
+<p class="image-container"><img style="width: 624.00px" src="img\cdad9ab0ffd6e483.png"></p>
+<p>次に、Botプログラムのあるサーバー（実際はGoogleクラウド上にあるのでサーバーは意識しない）を登録します。Server Listへの登録には2種類あります。</p>
+<ul>
+<li>固定IPタイプ（利用サーバーの IP を用いた認証形式で、サーバーのグローバルIPの登録が必要）</li>
+<li>ID登録タイプ（発行されたサーバー ID を用いて Token を発行する認証形式）</li>
+</ul>
+<p>今回のプログラムは固定したグローバルIPアドレスの登録が困難（Googleに任せているので）なのでID登録タイプでの登録を行います。</p>
+<p>Server List（ID登録タイプ）で[追加]をクリックして</p>
+<p class="image-container"><img style="width: 506.50px" src="img\e4bcee31415b9584.png"></p>
+<p>Server Listが起動しますので、サーバー名に「GAS文字起こしBotハンズオン」と入力し、Keyの選択のプルダウンから先ほど発行したServer API Consumer Keyを選択して[保存]ボタンをクリックします。</p>
+<p class="image-container"><img style="width: 610.00px" src="img\7e9f2d04ac3174a9.png"></p>
+<p>確認画面で[OK]をクリック</p>
+<p class="image-container"><img style="width: 459.00px" src="img\202d986f29f26f6d.png"></p>
+<p>登録できました。[ダウンロード]ボタンをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\f9c42c1ef0bc6ae0.png"></p>
+<p>内容を確認して[OK]をクリックします。</p>
+<p class="image-container"><img style="width: 461.00px" src="img\9188fbdb6d473ec7.png"></p>
+<p>認証キーがダウンロード完了という表示となり</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c3994ff3a90704f5.png"></p>
+<p>PCのダウンロードフォルダにprivate_YYYYMMDDHHMMSS.keyというファイルが格納されていればOKです。</p>
+<p class="image-container"><img style="width: 364.00px" src="img\f9a755f5b0d7f10e.png"></p>
+<p>ダウンロードした認証キーファイルをメモ帳や任意のエディタで開きます。</p>
+<p class="image-container"><img style="width: 400.46px" src="img\cd32a1b5d2f3b74e.png"></p>
+<p>認証キーを使う場合には、改行が正しく認識されないため、改行を「\n」に置換する必要があります。Windows10での置換方法としては、<a href="https://kazo9.net/win-memo-break" target="_blank">Wordに張り付けて置換する方法</a>などがあるようですが、ご自身で一番やりやすい方法で構いませんので以下のように置換された状態に変換してください。（操作を誤った時のために元のメモ帳ファイルは上書きしないようご注意ください）</p>
+<p>もしやり方が思いつかない場合には、<a href="https://kazo9.net/win-memo-break#web" target="_blank">インターネット上にある改行置換フォーム</a>で置換することが可能ですので参考にしてください。</p>
+<p class="image-container"><img style="width: 482.50px" src="img\d58a968944a601d0.png"></p>
+<aside class="warning"><p><strong>注意</strong>：これらのキーやIDは他人に共有せず、保管する場合には非公開な場所で保管してください。漏えいした場合、皆さんや皆さんの会社のLINE WORKSの情報の一部が外部から閲覧可能になる可能性があります。</p>
+</aside>
+<p>では、発行したAPI情報をノートにメモしておきましょう。</p>
+<p>API情報メモ用.txtを用意しておきましたのでこちらに張り付けて頂いてもよいかと思います。</p>
+<p class="image-container"><img style="width: 519.25px" src="img\1438e9ded47a4bfc.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Bot登録" duration="5">
+        <p>次に、Bot登録を行います。LINE WORKS Developer ConsoleのBotメニューをクリックし、[登録]をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\527aed437902616b.png"></p>
+<p>ボットの設定を行います。ボットプロフィール画像とBot名、説明を入力してください。</p>
+<p>ここはお好きな名前や画像を入れて頂いて構いません。</p>
+<p>サンプルと同じ画像を用意しましたので使って頂いて構いません。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\490dc4ea316a7141.png"></p>
+<p>Botポリシーは任意でチェックを付け、管理者として自分のアカウントを検索して主担当に追加し、[保存]をクリックしてください。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e4e9728f688095ca.png"></p>
+<p>ポップアップが起動しますので内容確認して[OK]をクリックします。</p>
+<p class="image-container"><img style="width: 467.00px" src="img\7c87206e961e3f03.png"></p>
+<p>Botリストに登録されたら完了です。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\2ab0f31cd2c1f949.png"></p>
+<p>このBot No.もあとで使いますのでメモしておきます。</p>
+<p class="image-container"><img style="width: 529.94px" src="img\bb0b3b36155d0d4f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Google Apps Scriptでプログラムを書く" duration="8">
+        <p>Botのプログラム部分を作ります。ここの部分ですね。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\92e30c023d5b9688.png"></p>
+<h2 is-upgraded><strong>Google Apps Scriptエディタを開く</strong></h2>
+<p><a href="https://www.google.co.jp/" target="_blank">Google</a>にログインします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\6ab1b10568bff566.png"></p>
+<p>Googleドライブを開きます。</p>
+<p class="image-container"><img style="width: 233.50px" src="img\aed260f458bf0775.png"></p>
+<p>マイドライブの中のお好きな場所に今日のハンズオン用のフォルダを作成しましょう。</p>
+<p class="image-container"><img style="width: 403.00px" src="img\f4bbef6ead8c059e.png"></p>
+<p>フォルダの名前はなんでも大丈夫です。</p>
+<p class="image-container"><img style="width: 405.00px" src="img\b53166af1612394b.png"></p>
+<p>フォルダが作成できたら、フォルダを開き、フォルダ内を右クリックし、メニューからGoogle Apps Scriptを選択します。</p>
+<p class="image-container"><img style="width: 510.50px" src="img\82c671b5c333de94.png"></p>
+<p>以下がGoogle Apps Scriptのエディタ画面です。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\2fb77752109f7160.png"></p>
+<p>この画面でもプログラムを書くことができるのですが、2020年12月にエディタが新しくなったばかりでまだ機能が足りていない部分があったり、最新情報がネット上に少なかったりしますので、今回のハンズオンでは以前のエディタを使用してプログラムを書きます。右上の[以前のエディタを使用]のリンクをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\6682e3d371d9f213.png"></p>
+<p>なんで昔のエディタに切り替えるの？って聞かれてます。なんでもいいのですが今回昔のエディタを使う必要がある一番の理由はプロパティという機能が新しいエディタにないためなので、これをクリックして送信します。</p>
+<p class="image-container"><img style="width: 373.53px" src="img\b40e8f09ad00ef8d.png"></p>
+<p>×で閉じます。</p>
+<p class="image-container"><img style="width: 530.50px" src="img\bb5a8e0dce0e7a76.png"></p>
+<p>しつこく新しいエディタをおススメされますが無視して閉じます。</p>
+<p class="image-container"><img style="width: 459.03px" src="img\f21f27426a977a21.png"></p>
+<p>これが旧エディタです。プログラムファイルの名前を付けますのでここをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\2ebc5ef0b64be026.png"></p>
+<p>プロジェクトの名前を「LWTTハンズオンGAS文字起こしボット」など任意の名前をつけて[OK]をクリックしてください。</p>
+<p class="image-container"><img style="width: 437.50px" src="img\f6046da2f0c0a810.png"></p>
+<p>名前が反映されました。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\413f0315ccaab306.png"></p>
+<h2 is-upgraded><strong>文字起こしボットのプログラムを書く</strong></h2>
+<p>プログラムのスクリプトファイル名を付けましょう。コード.gsというファイルのプルダウンからRenameをクリックします。</p>
+<p class="image-container"><img style="width: 382.00px" src="img\b57730684bc4531a.png"></p>
+<p>スクリプトファイル名として「文字起こし」と入力し、[OK]をクリックします。</p>
+<p class="image-container"><img style="width: 448.00px" src="img\73151a73eec17d85.png"></p>
+<p>名前が反映されました。</p>
+<p class="image-container"><img style="width: 470.00px" src="img\59cf5e2f7793858e.png"></p>
+<p>今回は、サンプルのプログラムを用意してあります。以下のボタンから、用意してあるサンプルプログラムを開きます。</p>
+<p><a href="https://script.google.com/d/14_ngktDZKWhRUjMo6WdAA8SN9fNmTn36-1KEP-PWhobtqzK04EjkvJCP/edit?usp=sharing" target="_blank"><paper-button class="colored" raised>サンプルプログラムリンク</paper-button></a></p>
+<p class="image-container"><img style="width: 536.50px" src="img\e1fd097ff5f4c24e.png"></p>
+<p>このプログラムをすべて選択し、コピーして</p>
+<p class="image-container"><img style="width: 624.00px" src="img\e8efb8a694f3ed41.png"></p>
+<p>自分のアカウントのGASエディタ上にあるプログラムに上書き（もしくは一度すべてを削除してから貼り付け）してください。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\4597a990ebda9626.png"></p>
+<p>貼り付けました。まだ保存されていないので＊マークがついています。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\a48a349edc54b071.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="LINEWORKS ライブラリ登録" duration="3">
+        <p>今回のハンズオンでは、勉強のために2通りの方法でAPIを使っています。</p>
+<ul>
+<li>ゼロからAPI利用のためのプログラムを書く</li>
+<li>誰かが作ってくれたAPIを使うためのライブラリを使う</li>
+</ul>
+<p>この後者を使うために、<a href="https://qiita.com/kunihiros" target="_blank">@kunihiros</a> さんが作成されているライブラリを使いますので、ライブラリの登録を行います。<a href="https://qiita.com/kunihiros/items/a94221ad7c9f4de84cf8#3-%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%82%92%E7%99%BB%E9%8C%B2%E3%81%99%E3%82%8B" target="_blank">こちらのqiita記事</a>でも紹介されているので後日読んでみてください。</p>
+<p>リソース＞ライブラリをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c9857039305a2151.png"></p>
+<p>ライブラリの追加画面で `<code>1aLcCr3CWqfenPMyM0_FWIDUgRcTxsit9bO6BTx61NCXrCtkY2zbHBlod</code>` を入力し、[追加]ボタンをクリックします。<img style="width: 624.00px" src="img\69744ef0e2edea13.png"></p>
+<p>一番最新のバージョンを指定します。</p>
+<p class="image-container"><img style="width: 468.79px" src="img\1541982d07633828.png"></p>
+<p>保存をクリックします。</p>
+<p class="image-container"><img style="width: 513.93px" src="img\7e3195e2b01ffd36.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Google Drive APIの拡張利用を有効にする" duration="3">
+        <p>文字起こしは、裏でGoogle Drive APIを利用しています。無料で使える機能ですが、標準では利用がOFFになっていますので機能を有効にします。</p>
+<p>リソース＞Google拡張サービスをクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\f477845cc966f0e9.png"></p>
+<p>Drive APIを有効にします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\d294981efad9a6c1.png"></p>
+<p>ONになったことを確認し[OK]をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\d44bbd4f8535690a.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="API情報をプロパティに登録する" duration="8">
+        <p>GASのプログラムができました。LINE WORKSとつなぐためにAPI情報を設定します。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\ee532182d7c291e.png"></p>
+<p>ファイル＞プロジェクトのプロパティをクリックします。</p>
+<p class="image-container"><img style="width: 274.32px" src="img\f69632936dadaeab.png"></p>
+<p>プロジェクトのプロパティのスクリプトのプロパティタブの行を追加リンクをクリックします。</p>
+<p class="image-container"><img style="width: 446.50px" src="img\6672399d76038dae.png"></p>
+<p>以下のように、メモしてあったAPI情報のServer List(ID登録タイプ)以外をプロパティに登録し[保存]をクリックします。順番はどの順番でも大丈夫です。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\526d2b5af1f7edb6.png"></p>
+<p>プログラム内の 6行目の &#34; &#34; の間にメモしてあったServer List(ID登録タイプ)の値を入れます。</p>
+<pre><code>const privateKey = &#34;-----BEGIN PRIVATE KEY-----\nここに認証キーが入ります\n-----END PRIVATE KEY-----&#34;;</code></pre>
+<p class="image-container"><img style="width: 583.00px" src="img\8aba5cde0a8e9590.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="プログラムを公開する" duration="2">
+        <h2 is-upgraded><strong>プログラムを保存する</strong></h2>
+<p>[Ctrl + S]もしくはファイル&gt;保存をクリックして保存します。</p>
+<p class="image-container"><img style="width: 374.64px" src="img\60ca8f0d378d952a.png"></p>
+<p>＊が表示されていないことを確認します。</p>
+<p class="image-container"><img style="width: 442.00px" src="img\3f4d1551f1c1fe26.png"></p>
+<h2 is-upgraded><strong>プログラムを公開する</strong></h2>
+<p>公開タブをクリックし、ウェブアプリケーションとして導入をクリックします。</p>
+<p class="image-container"><img style="width: 578.00px" src="img\8509d2885dd0e06a.png"></p>
+<p>Deploy as web app画面で</p>
+<p>New、Me(自分のGoogleアカウント）になっていることを確認し、Who has access to the app:のプルダウンよりAnyone, even anonymousを選択し、[Deploy]をクリックします。</p>
+<p class="image-container"><img style="width: 435.00px" src="img\7a033e12b08bacf6.png"></p>
+<p>認証の許可を求めるポップアップが起動しますので、[許可を確認]をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\b04f8a91fa24a37b.png"></p>
+<p>GASプログラムエディタにログインしていたGoogleアカウントを選択します。</p>
+<p class="image-container"><img style="width: 342.58px" src="img\a1f9a21aa9904ef.png"></p>
+<p>以下の警告画面が表示されますので、[詳細]をクリックします。</p>
+<p class="image-container"><img style="width: 417.35px" src="img\2b4d3630d1477715.png"></p>
+<p>Googleアカウントに間違いがないことを確認の上で、[LWTTハンズオンGAS文字起こしボット（安全ではないページ）に移動]をクリックします。</p>
+<p class="image-container"><img style="width: 398.04px" src="img\c3007719cdb6fa23.png"></p>
+<aside class="special"><p><strong>ノート</strong>：この画面見ると危険なことをしようとしている気分になるかもしれませんが、ハンズオンだからではなくGASのプログラムを初回で公開する時には必ずこの画面が出て許可する必要があります。</p>
+</aside>
+<p>ボット名とGoogleアカウント名に認識相違がないことを確認し、[許可]をクリックします。</p>
+<p class="image-container"><img style="width: 387.44px" src="img\dd78800a8e390907.png"></p>
+<p>デプロイできました。この表示されるURLをコピーして、[OK]をクリックします。</p>
+<p class="image-container"><img style="width: 460.00px" src="img\f79f1393e72dd9.png"></p>
+<p>メモ帳にメモしておきましょう。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\4076c3c3c4357fd3.png"></p>
+<p><a href="https://developers.worksmobile.com/jp/console/bot/view" target="_blank">LINE WORKS Developer ConsoleのBotメニュー</a>を開き、Botを選択します。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\ce8e0b17bfa4253.png"></p>
+<p>[修正]ボタンをクリックします。</p>
+<p class="image-container"><img style="width: 425.25px" src="img\9e652a6d093b47c7.png"></p>
+<p>Callback URLをONにし、先ほどコピーしたURLを入力し、メンバーが送信可能なメッセージタイプの中の画像にチェックを入れ、保存します。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\cb5182b262d76720.png"></p>
+<p>これでLINE WORKSとつながる準備ができました。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Botを公開する" duration="5">
+        <p>では、Botを公開しましょう。<a href="https://admin.worksmobile.com/service/bot" target="_blank">LINE WORKS 管理画面のBotメニュー</a>で[Bot追加]をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\8971ed964d59d35b.png"></p>
+<p>登録したBotが表示されたはずです。[追加]をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\589704020f9df796.png"></p>
+<p>追加されました。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\aa237e1a5b7edada.png"></p>
+<p>前に戻ると</p>
+<p class="image-container"><img style="width: 387.00px" src="img\95278d74ff4ba2cf.png"></p>
+<p>Botが追加されています。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\b184d8038ee82375.png"></p>
+<p>Developer ConsoleのBot画面ではステータスがサービス中の表示に変わったはずです。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\200ae9ffa937b3f6.png"></p>
+<p>ところがどっこい。この状態ではまだ誰からもBotが見えない状態です。試しにLINE WORKSのチャット画面でBotとのトークルームを作成しようとしても表示されていません。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\4eb188fc385bb1b6.png"></p>
+<p><a href="https://admin.worksmobile.com/service/bot" target="_blank">LINE WORKS 管理画面のBotメニュー</a>からボットをクリックし詳細を開くと</p>
+<p class="image-container"><img style="width: 557.50px" src="img\ffbdf1f8559c3c06.png"></p>
+<p>公開設定が非公開になっている状態ですので、[修正]をクリックします。</p>
+<p class="image-container"><img style="width: 277.25px" src="img\899e6b4aa6176012.png"></p>
+<p>公開設定をONにして[保存]</p>
+<p class="image-container"><img style="width: 337.67px" src="img\2bbbe82eb0823a5d.png"></p>
+<p>チャット画面でボットが追加された旨の通知が届いていることを確認します。</p>
+<p class="image-container"><img style="width: 534.73px" src="img\5264b8f38a50dcd5.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ボットを使ってみよう" duration="10">
+        <p>トークルームを作成します。Botタブのメンバーに文字起こしBotが表示されていますので、チェックをして[OK]をクリックしてトークルームを作成しましょう。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\d03968d68fc08607.png"></p>
+<p>利用開始をクリックします。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\f96f49e9d260c69a.png"></p>
+<p>トークルームが作成されました。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\3607e3d61ed7778b.png"></p>
+<p>文字起こしが動くか、スマホから画像を送信してみましょう。</p>
+<p class="image-container"><img style="width: 624.00px" src="img\c51a5b8e6a44044c.png"></p>
+<p>文字起こしされましたか？</p>
+<p>うまくいかなかった方は設定誤りや漏れがないか確認しましょう。</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="うまくいかない場合には" duration="5">
+        <p>以下のポイントで作業漏れや設定誤りがないか再度確認しましょう</p>
+<p>□<a href="https://admin.worksmobile.com/service/bot" target="_blank">LINE WORKS管理画面のBotの公開設定</a>は公開になっていますか？</p>
+<p>□発行したAPI情報とGASのプロパティに登録されたキーは一致してますか？</p>
+<p>□Developer Consoleのボットのステータスは「サービス中」になっていますか？</p>
+<p>□Developer ConsoleのボットのCallback URLはGASの公開URLと一致していますか？</p>
+<p>□GASエディタのリソース＞ライブラリにはLINEWORKSライブラリは登録されてますか？</p>
+<p>□GASエディタののリソース＞Googleの拡張サービスのDrive APIはONになっていますか？</p>
+<h2 is-upgraded><strong>Google Scriptダッシュボードでログを確認する</strong></h2>
+<p>GASのログを確認する方法を紹介します。</p>
+<p>表示＞ログをクリックし</p>
+<p class="image-container"><img style="width: 618.00px" src="img\8f1362bb24ec512e.png"></p>
+<p>Apps Scriptダッシュボードをクリックします。</p>
+<p class="image-container"><img style="width: 491.48px" src="img\b7f73923befb86a6.png"></p>
+<p>デフォルトだと、自分のアカウントで実行したものにフィルタされていますので×をクリックしてフィルタを解除します。</p>
+<p class="image-container"><img style="width: 522.30px" src="img\847326d0bd5670ec.png"></p>
+<p>ログがすべて表示されますので確認したいログのプロジェクトの詳細をクリックすると</p>
+<p class="image-container"><img style="width: 624.00px" src="img\eebe124a0943bf18.png"></p>
+<p>実行ログを確認することができます。</p>
+<p class="image-container"><img style="width: 519.50px" src="img\31f4e040c4f35776.png"></p>
+<aside class="special"><p><strong>ノート</strong>：GoogleのクラウドサーバーサービスであるGCPを使うとさらに詳細のログを確認することができました。この機能が無料で使えるかどうかは未確認ですが、GCPの利用自体クレジットカードの登録が必要となるため今回のハンズオンでは扱っていません。</p>
+<p class="image-container"><img style="width: 610.00px" src="img\ccb80254d07b72b0.png"></p>
+</aside>
+<h2 is-upgraded><strong>プログラムを編集した場合の再公開</strong></h2>
+<p>GASはプログラムを改変する度に、公開し直す必要があります。</p>
+<p>再公開する際には、公開＞ウェブアプリケーションとして導入をクリックし</p>
+<p class="image-container"><img style="width: 624.00px" src="img\673424b4f7d1af36.png"></p>
+<p>必ずProject VersionをプルダウンからNewを選択し</p>
+<p class="image-container"><img style="width: 274.59px" src="img\89dda934eda2555f.png"></p>
+<p>[更新]ボタンをクリックしてください。</p>
+<p class="image-container"><img style="width: 370.40px" src="img\eca8b6a00f3517a.png"></p>
+<p>公開URLは変わらないのでこのURLをLINE WORKS側に登録し直す必要はありませんがこれをやらないと古いプログラムのまま動いてしまいます。</p>
+<p class="image-container"><img style="width: 382.87px" src="img\90c25fc4d2f1905a.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ハンズオン終了" duration="0">
+        <p>いかがでしたでしょうか？完走できましたでしょうか？</p>
+<p>今回のハンズオンはすべて無料で作れますので、放置していても課金されるものではないですが、後片付けは記憶があるうちにやって頂いた方がよいかと思います。</p>
+<ul>
+<li>Developer ConsoleのAPIメニューからAPI ID、Server API Consumer Key、Server List（ID登録タイプ）の削除</li>
+<li> Developer ConsoleのBotメニューからBot削除</li>
+<li>Google Drive上のGASファイルを削除</li>
+</ul>
+<p>是非、復習などして、今回の知識を応用したボットができたら twitterで @lwtt_jp メンションして共有して頂けるとうれしいです♪</p>
+<p>ありがとうございました！</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

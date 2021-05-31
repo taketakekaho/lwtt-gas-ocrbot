@@ -1,0 +1,29 @@
+このテキストファイルは、API情報をメモしておくためのテキストファイルです。
+
+
+〇apiId
+API IDを以下にメモしてください。
+
+
+
+〇consumerKey
+Server API Consumer Keyを以下にメモしてください。
+
+
+
+〇privateKey
+Server List(ID登録タイプ)
+
+
+
+〇serverId
+
+
+
+〇botNo
+
+
+
+〇Callback URL
+
+

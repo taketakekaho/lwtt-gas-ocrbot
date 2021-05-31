@@ -1,0 +1,29 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2021-05-31T07:35:12Z",
+  "id": "lwtt-gas-ocrbot",
+  "duration": 70,
+  "title": "GASで文字起こしLINEWORKSボット作成ハンズオン",
+  "authors": "kahori_takeda",
+  "summary": "LWTT第3回ハンズオン勉強会 GASで文字起こしLINEWORKSボット作成",
+  "source": "1tZkpb7obJxPdl2ClT38ucozsPKnOSxbi9vdwft1B4pU",
+  "theme": "web",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "Web"
+  ],
+  "tags": [
+    "bot",
+    "googleappsscript",
+    "lineworks",
+    "ocr"
+  ],
+  "feedback": "https://twitter.com/taketakekaho",
+  "ga": "UA-148911740-2",
+  "url": "lwtt-gas-ocrbot"
+}
